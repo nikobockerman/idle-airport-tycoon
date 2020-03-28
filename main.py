@@ -1,7 +1,8 @@
 import json
-from consolemenu import *
-from consolemenu.items import *
+import shutil
 from decimal import Decimal as D
+
+import npyscreen
 
 UNITS = {
     "M": 10 ** 6,
@@ -104,6 +105,12 @@ class Research:
             if self.db_elem.increase_type == "double":
                 self.level = 1
 
+    def increase_level(self):
+        if self.db_elem.increase_type == "double":
+            self.level *= 2
+        else:
+            self.level += self.db_elem.increase_percent
+
     def get_payback_values(self, start_level=None):
         current_level = start_level
         if current_level is None:
@@ -137,7 +144,8 @@ class Research:
 
 class State:
     def __init__(self, path, database):
-        with open(path) as f:
+        self._path = path
+        with open(self._path) as f:
             data = json.load(f)
 
         self.discount_level = data["discount_level"]
@@ -150,6 +158,19 @@ class State:
                 continue
 
             self.researches.append(Research(key, False, None, elem))
+
+    def save(self):
+        new_data = {
+            "discount_level": self.discount_level,
+            "researches": {
+                research.name: research.level for research in self.researches
+            },
+        }
+
+        tmp_path = self._path + ".tmp"
+        with open(tmp_path, "w") as f:
+            f.write(json.dumps(new_data, indent=4))
+        shutil.move(tmp_path, self._path)
 
 
 def get_next_payback_values(researches):
@@ -175,9 +196,73 @@ def get_next_payback_values(researches):
             values = sort(values)
 
 
-def main():
+class IdleAirport(npyscreen.Form):
+    def __init__(self, state, *args, **kwargs):
+        self._state = state
+        self._value_generator = get_next_payback_values(self._state.researches)
+        self._grid = None
+        super().__init__(args, kwargs)
+
+    def create(self):
+        self._grid = self.add(
+            npyscreen.SimpleGrid,
+            name="Grid",
+            columns=5,
+            select_whole_line=True,
+            max_height=10,
+        )
+        self._grid.values = []
+        for _ in range(10):
+            self._grid.values.append(
+                self._get_row_data(next(self._value_generator))
+            )
+
+        def mark_done():
+            research = self._grid.values[0][5]
+            research.increase_level()
+            self._state.save()
+            del self._grid.values[0]
+            self._grid.values.append(
+                self._get_row_data(next(self._value_generator))
+            )
+            self._grid.update()
+
+        self._mark_done_button = self.add(
+            npyscreen.ButtonPress,
+            name="MarkDone",
+            when_pressed_function=mark_done,
+        )
+
+    @staticmethod
+    def _get_row_data(value):
+        return [
+            value.research.name,
+            value.old_level,
+            value.new_level,
+            print_price(value.cost),
+            print_price(value.payback_value)
+            if value.payback_value is not None
+            else "???",
+            value.research,
+        ]
+
+    def afterEditing(self):
+        self.parentApp.setNextForm(None)
+
+
+def idle_airport(*args):
     database = Database("database.json")
     state = State("state.json", database)
+    form = IdleAirport(state, name="Next researches")
+    form.edit()
+
+
+def main():
+    npyscreen.wrapper_basic(idle_airport)
+    # app = IdleAirport(database, state)
+    # app.run()
+    return
+    state = None
     for index, value in enumerate(get_next_payback_values(state.researches)):
         print(
             "{:20}: {:4} => {:4}: {:>9} --- {:>9}".format(
