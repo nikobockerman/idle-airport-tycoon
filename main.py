@@ -261,36 +261,6 @@ def main():
     app = IdleAirport()
     app.run()
     return
-    state = None
-    for index, value in enumerate(get_next_payback_values(state.researches)):
-        print(
-            "{:20}: {:4} => {:4}: {:>9} --- {:>9}".format(
-                value.research.name,
-                value.old_level,
-                value.new_level,
-                print_price(value.cost),
-                print_price(value.payback_value)
-                if value.payback_value is not None
-                else "???",
-            )
-        )
-        if index >= 9:
-            break
-    # for research in state.researches:
-    #    print(research.name)
-    #    for payback_value in research.get_payback_values():
-    #        print(
-    #            "{} => {}: {} --- {}".format(
-    #                payback_value.old_level,
-    #                payback_value.new_level,
-    #                print_price(payback_value.cost),
-    #                print_price(payback_value.payback_value),
-    #            )
-    #        )
-    # menu = ConsoleMenu("IdleAirport", "Something")
-    # item = MenuItem("Item")
-    # menu.append_item(item)
-    # menu.show()
 
 
 if __name__ == "__main__":
