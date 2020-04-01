@@ -196,7 +196,7 @@ def get_next_payback_values(researches):
             values = sort(values)
 
 
-class IdleAirport(npyscreen.Form):
+class NextResearches(npyscreen.Form):
     def __init__(self, state, *args, **kwargs):
         self._state = state
         self._value_generator = get_next_payback_values(self._state.researches)
@@ -250,17 +250,16 @@ class IdleAirport(npyscreen.Form):
         self.parentApp.setNextForm(None)
 
 
-def idle_airport(*args):
-    database = Database("database.json")
-    state = State("state.json", database)
-    form = IdleAirport(state, name="Next researches")
-    form.edit()
+class IdleAirport(npyscreen.NPSAppManaged):
+    def onStart(self):
+        self.database = Database("database.json")
+        self.state = State("state.json", self.database)
+        self.addForm("MAIN", NextResearches, self.state)
 
 
 def main():
-    npyscreen.wrapper_basic(idle_airport)
-    # app = IdleAirport(database, state)
-    # app.run()
+    app = IdleAirport()
+    app.run()
     return
     state = None
     for index, value in enumerate(get_next_payback_values(state.researches)):
