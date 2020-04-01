@@ -4,6 +4,7 @@ import statistics
 from decimal import Decimal as D
 
 import npyscreen
+import simplejson
 
 UNITS = {
     "M": 10 ** 6,
@@ -27,11 +28,16 @@ def get_unit(exp):
     return next((k for k, v in UNITS.items() if D(v).log10() == exp))
 
 
-def print_price(price):
+def factor_price(price):
     x = D(price)
     exp = x.adjusted()
     exp -= exp % 3
-    return "{} {}".format(x.scaleb(-exp).quantize(D("1.000")), get_unit(exp))
+    return (x.scaleb(-exp).quantize(D("1.000"))), get_unit(exp)
+
+
+def print_price(price):
+    cost, unit = factor_price(price)
+    return "{} {}".format(cost, unit)
 
 
 class Database:
@@ -106,8 +112,21 @@ class Database:
 
             return current_price, payback_price, is_estimate
 
+        def add_cost(self, level, discount_level, price, unit):
+            discounts = self.prices.get(level)
+            if discounts is None:
+                discounts = {}
+                self.prices[level] = discounts
+
+            assert discount_level not in discounts
+
+            discounts[discount_level] = Database.Price(
+                level, price, unit, discount_level
+            )
+
     def __init__(self, path):
-        with open(path) as f:
+        self._path = path
+        with open(self._path) as f:
             data = json.load(f)
 
         self.data = {}
@@ -130,6 +149,32 @@ class Database:
                 value["last_level"],
                 prices,
             )
+
+    def save(self):
+        db_data = {}
+
+        for research_name, elem in self.data.items():
+            db_prices = {}
+            for research_level, discounts in elem.prices.items():
+                db_discounts = {}
+                for discount_level, price in discounts.items():
+                    db_price, db_unit = factor_price(price.get_price())
+                    db_discounts[str(discount_level)] = {
+                        "price": db_price,
+                        "unit": db_unit,
+                    }
+                db_prices[research_level] = db_discounts
+            db_data[research_name] = {
+                "increase_type": elem.increase_type,
+                "increase_percent": elem.increase_percent,
+                "last_level": elem.last_level,
+                "prices": db_prices,
+            }
+
+        tmp_path = self._path + ".tmp"
+        with open(tmp_path, "w") as f:
+            f.write(simplejson.dumps(db_data, indent=4))
+        shutil.move(tmp_path, self._path)
 
 
 class PaybackValue:
@@ -223,7 +268,7 @@ class State:
             if next((True for r in self.researches if r.name == key), False):
                 continue
 
-            self.researches.append(Research(key, False, None, elem))
+            self.researches.append(Research(key, None, elem))
 
     def save(self):
         new_data = {
@@ -268,9 +313,7 @@ def get_next_payback_values(researches, current_discount_level):
 class NextResearches(npyscreen.FormBaseNewExpanded):
     def __init__(self, state, *args, **kwargs):
         self._state = state
-        self._value_generator = get_next_payback_values(
-            self._state.researches, self._state.discount_level
-        )
+        self._value_generator = None
         self._grid = None
         super().__init__(args, kwargs)
 
@@ -294,6 +337,9 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         )
 
     def beforeEditing(self):
+        self._value_generator = get_next_payback_values(
+            self._state.researches, self._state.discount_level
+        )
         self._grid.values = []
         for _ in range(10):
             self._grid.values.append(
@@ -313,6 +359,8 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
             self._get_row_data(next(self._value_generator))
         )
         self._grid.update()
+        if self.parentApp.ask_for_database_updates():
+            self.parentApp.switchForm("ASK_PRICE")
 
     def exit(self):
         self.editing = False
@@ -337,8 +385,69 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
             value.research,
         ]
 
+
+class QueryPriceForm(npyscreen.ActionPopup):
+    def create(self):
+        self._current_discount_level = None
+        self._research = None
+        self._estimated_cost = None
+        self._estimated_unit = None
+
+        self.add(npyscreen.FixedText, value="Add reserch cost to database")
+        self._research_name_field = self.add(
+            npyscreen.TitleFixedText, name="Research:", value=""
+        )
+        self._level_from_field = self.add(
+            npyscreen.TitleFixedText, name="From level:", value=""
+        )
+        self.nextrely += 1
+        self._cost_field = self.add(npyscreen.TitleText, name="Cost:", value="")
+        self._unit_field = self.add(npyscreen.TitleText, name="Unit:", value="")
+
+    def set_values(
+        self, current_discount_level, research, estimated_cost, estimated_unit
+    ):
+        self._current_discount_level = current_discount_level
+        self._research = research
+        self._estimated_cost = estimated_cost
+        self._estimated_unit = estimated_unit
+
+    def beforeEditing(self):
+        self._research_name_field.value = self._research.name
+        self._level_from_field.value = str(self._research.level)
+        self._cost_field.value = str(self._estimated_cost)
+        self._unit_field.value = self._estimated_unit
+
+    def pre_edit_loop(self):
+        super().pre_edit_loop()
+        self.set_editing(self.get_widget(3))
+
+    def on_ok(self):
+        try:
+            price = float(self._cost_field.value)
+        except ValueError:
+            npyscreen.notify_confirm("Invalid cost", title="popup")
+            return True
+
+        try:
+            unit = self._unit_field.value
+            UNITS[unit]
+        except KeyError:
+            npyscreen.notify_confirm("Invalid unit", title="popup")
+            return True
+
+        self._research.db_elem.add_cost(
+            self._research.level, self._current_discount_level, price, unit
+        )
+        self.parentApp.database.save()
+        return False
+
+    def on_cancel(self):
+        return False
+
     def afterEditing(self):
-        self.parentApp.setNextForm(None)
+        if not self.parentApp.set_next_database_update_form():
+            self.parentApp.setNextFormPrevious()
 
 
 class IdleAirport(npyscreen.NPSAppManaged):
@@ -346,6 +455,52 @@ class IdleAirport(npyscreen.NPSAppManaged):
         self.database = Database("database.json")
         self.state = State("state.json", self.database)
         self.addForm("MAIN", NextResearches, self.state)
+        self.addForm("ASK_PRICE", QueryPriceForm)
+        self.get_next_database_update_query_data = None
+        if self.ask_for_database_updates():
+            self.setNextForm("ASK_PRICE")
+
+    def ask_for_database_updates(self):
+        assert self.get_next_database_update_query_data is None
+
+        def get_researches_needing_database_update():
+            for research_name in self.database.data:
+                research = next(
+                    (
+                        r
+                        for r in self.state.researches
+                        if r.name == research_name
+                    )
+                )
+                price, _, is_estimate = research.db_elem.get_price_information(
+                    research.level, self.state.discount_level
+                )
+                if price is not None and is_estimate:
+                    yield research, price
+
+        self.get_next_database_update_query_data = (
+            get_researches_needing_database_update()
+        )
+        return self.set_next_database_update_form()
+
+    def set_next_database_update_form(self):
+        assert self.get_next_database_update_query_data is not None
+
+        research, price = next(
+            self.get_next_database_update_query_data, (None, None)
+        )
+
+        if research is None:
+            self.get_next_database_update_query_data = None
+            return False
+
+        current_discount_level = self.state.discount_level
+        cost, unit = factor_price(price)
+        self.getForm("ASK_PRICE").set_values(
+            current_discount_level, research, cost, unit
+        )
+        self.getForm("ASK_PRICE").resize()
+        return True
 
 
 def main():
