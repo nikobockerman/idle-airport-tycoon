@@ -5,364 +5,436 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 83.811,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 83.811,
+                    "unit": "o"
+                }
             },
             "25": {
-                "price": 108.765,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 108.765,
+                    "unit": "o"
+                }
             },
             "50": {
-                "price": 139.971,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 139.971,
+                    "unit": "o"
+                }
             },
             "75": {
-                "price": 181.1,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 181.1,
+                    "unit": "o"
+                }
             },
             "100": {
-                "price": 233.144,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 233.144,
+                    "unit": "o"
+                }
             },
             "125": {
-                "price": 300.621,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 300.621,
+                    "unit": "o"
+                }
             },
             "150": {
-                "price": 387.224,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 387.224,
+                    "unit": "o"
+                }
             },
             "175": {
-                "price": 497.441,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 497.441,
+                    "unit": "o"
+                }
             },
             "200": {
-                "price": 641.189,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 641.189,
+                    "unit": "o"
+                }
             },
             "225": {
-                "price": 820.443,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 820.443,
+                    "unit": "o"
+                }
             },
             "250": {
-                "price": 1.059,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.059,
+                    "unit": "N"
+                }
             },
             "275": {
-                "price": 1.354,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.354,
+                    "unit": "N"
+                }
             },
             "300": {
-                "price": 1.742,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.742,
+                    "unit": "N"
+                }
             },
             "325": {
-                "price": 2.228,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 2.228,
+                    "unit": "N"
+                }
             },
             "350": {
-                "price": 2.856,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 2.856,
+                    "unit": "N"
+                }
             },
             "375": {
-                "price": 3.656,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 3.656,
+                    "unit": "N"
+                }
             },
             "400": {
-                "price": 4.666,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 4.666,
+                    "unit": "N"
+                }
             },
             "425": {
-                "price": 5.976,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 5.976,
+                    "unit": "N"
+                }
             },
             "450": {
-                "price": 7.598,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 7.598,
+                    "unit": "N"
+                }
             },
             "475": {
-                "price": 9.737,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 9.737,
+                    "unit": "N"
+                }
             },
             "500": {
-                "price": 12.378,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 12.378,
+                    "unit": "N"
+                }
             },
             "525": {
-                "price": 15.809,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 15.809,
+                    "unit": "N"
+                }
             },
             "550": {
-                "price": 20.097,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 20.097,
+                    "unit": "N"
+                }
             },
             "575": {
-                "price": 25.577,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 25.577,
+                    "unit": "N"
+                }
             },
             "600": {
-                "price": 32.52,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 32.52,
+                    "unit": "N"
+                }
             },
             "625": {
-                "price": 41.23,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 41.23,
+                    "unit": "N"
+                }
             },
             "650": {
-                "price": 52.435,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 52.435,
+                    "unit": "N"
+                }
             },
             "675": {
-                "price": 66.211,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 66.211,
+                    "unit": "N"
+                }
             },
             "700": {
-                "price": 84.234,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 84.234,
+                    "unit": "N"
+                }
             },
             "725": {
-                "price": 106.329,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 106.329,
+                    "unit": "N"
+                }
             },
             "750": {
-                "price": 134.809,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 134.809,
+                    "unit": "N"
+                }
             },
             "775": {
-                "price": 170.139,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 170.139,
+                    "unit": "N"
+                }
             },
             "800": {
-                "price": 214.919,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 214.919,
+                    "unit": "N"
+                }
             },
             "825": {
-                "price": 271.23,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 271.23,
+                    "unit": "N"
+                }
             },
             "850": {
-                "price": 341.287,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 341.287,
+                    "unit": "N"
+                }
             },
             "875": {
-                "price": 430.719,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 430.719,
+                    "unit": "N"
+                }
             },
             "900": {
-                "price": 539.789,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 539.789,
+                    "unit": "N"
+                }
             },
             "925": {
-                "price": 681.275,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 681.275,
+                    "unit": "N"
+                }
             },
             "950": {
-                "price": 853.347,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 853.347,
+                    "unit": "N"
+                }
             },
             "975": {
-                "price": 1.074,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.074,
+                    "unit": "d"
+                }
             },
             "1000": {
-                "price": 1.344,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.344,
+                    "unit": "d"
+                }
             },
             "1025": {
-                "price": 1.683,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.683,
+                    "unit": "d"
+                }
             },
             "1050": {
-                "price": 2.108,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 2.108,
+                    "unit": "d"
+                }
             },
             "1075": {
-                "price": 2.629,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 2.629,
+                    "unit": "d"
+                }
             },
             "1100": {
-                "price": 3.291,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 3.291,
+                    "unit": "d"
+                }
             },
             "1125": {
-                "price": 4.09,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 4.09,
+                    "unit": "d"
+                }
             },
             "1150": {
-                "price": 5.133,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 5.133,
+                    "unit": "d"
+                }
             },
             "1175": {
-                "price": 6.421,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 6.421,
+                    "unit": "d"
+                }
             },
             "1200": {
-                "price": 8.096,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 8.096,
+                    "unit": "d"
+                }
             },
             "1225": {
-                "price": 10.191,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 10.191,
+                    "unit": "d"
+                }
             },
             "1250": {
-                "price": 12.877,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 12.877,
+                    "unit": "d"
+                }
             },
             "1275": {
-                "price": 16.289,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 16.289,
+                    "unit": "d"
+                }
             },
             "1300": {
-                "price": 20.587,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 20.587,
+                    "unit": "d"
+                }
             },
             "1325": {
-                "price": 26.143,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 26.143,
+                    "unit": "d"
+                }
             },
             "1350": {
-                "price": 33.014,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 33.014,
+                    "unit": "d"
+                }
             },
             "1375": {
-                "price": 42.062,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 42.062,
+                    "unit": "d"
+                }
             },
             "1400": {
-                "price": 53.234,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 53.234,
+                    "unit": "d"
+                }
             },
             "1425": {
-                "price": 67.764,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 67.764,
+                    "unit": "d"
+                }
             },
             "1450": {
-                "price": 85.944,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 85.944,
+                    "unit": "d"
+                }
             },
             "1475": {
-                "price": 109.238,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 109.238,
+                    "unit": "d"
+                }
             },
             "1500": {
-                "price": 138.841,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 138.841,
+                    "unit": "d"
+                }
             },
             "1525": {
-                "price": 176.19,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 176.19,
+                    "unit": "d"
+                }
             },
             "1550": {
-                "price": 224.32,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 224.32,
+                    "unit": "d"
+                }
             },
             "1575": {
-                "price": 283.919,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 283.919,
+                    "unit": "d"
+                }
             },
             "1600": {
-                "price": 362.413,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 362.413,
+                    "unit": "d"
+                }
             },
             "1625": {
-                "price": 459.325,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 459.325,
+                    "unit": "d"
+                }
             },
             "1650": {
-                "price": 585.37,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 585.37,
+                    "unit": "d"
+                }
             },
             "1675": {
-                "price": 743.071,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 743.071,
+                    "unit": "d"
+                }
             },
             "1700": {
-                "price": 945.12,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 945.12,
+                    "unit": "d"
+                }
             },
             "1725": {
-                "price": 1.202,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 1.202,
+                    "unit": "U"
+                }
             },
             "1750": {
-                "price": 1.525,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 1.525,
+                    "unit": "U"
+                }
             },
             "1775": {
-                "price": 1.943,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 1.943,
+                    "unit": "U"
+                }
             }
         }
     },
@@ -372,49 +444,58 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 378.558,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 378.558,
+                    "unit": "d"
+                }
             },
             "25": {
-                "price": 588.24,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 588.24,
+                    "unit": "d"
+                }
             },
             "50": {
-                "price": 914.32,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 914.32,
+                    "unit": "d"
+                }
             },
             "75": {
-                "price": 1.421,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 1.421,
+                    "unit": "U"
+                }
             },
             "100": {
-                "price": 2.209,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 2.209,
+                    "unit": "U"
+                }
             },
             "125": {
-                "price": 3.433,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 3.433,
+                    "unit": "U"
+                }
             },
             "150": {
-                "price": 5.336,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 5.336,
+                    "unit": "U"
+                }
             },
             "175": {
-                "price": 8.295,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 8.295,
+                    "unit": "U"
+                }
             },
             "200": {
-                "price": 12.894,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 12.894,
+                    "unit": "U"
+                }
             }
         }
     },
@@ -424,29 +505,34 @@
         "last_level": null,
         "prices": {
             "1": {
-                "price": 27.283,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 27.283,
+                    "unit": "o"
+                }
             },
             "2": {
-                "price": 8.421,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 8.421,
+                    "unit": "N"
+                }
             },
             "4": {
-                "price": 1.8,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.8,
+                    "unit": "d"
+                }
             },
             "8": {
-                "price": 323.406,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 323.406,
+                    "unit": "d"
+                }
             },
             "16": {
-                "price": 71.137,
-                "unit": "U",
-                "discount_level": 12
+                "12": {
+                    "price": 71.137,
+                    "unit": "U"
+                }
             }
         }
     },
@@ -456,9 +542,10 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 43.824,
-                "unit": "Td",
-                "discount_level": 12
+                "12": {
+                    "price": 43.824,
+                    "unit": "Td"
+                }
             }
         }
     },
@@ -468,9 +555,10 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 21.527,
-                "unit": "Qd",
-                "discount_level": 12
+                "12": {
+                    "price": 21.527,
+                    "unit": "Qd"
+                }
             }
         }
     },
@@ -480,9 +568,10 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 2.398,
-                "unit": "Td",
-                "discount_level": 12
+                "12": {
+                    "price": 2.398,
+                    "unit": "Td"
+                }
             }
         }
     },
@@ -492,9 +581,10 @@
         "last_level": null,
         "prices": {
             "0": {
-                "price": 1.722,
-                "unit": "Qd",
-                "discount_level": 12
+                "12": {
+                    "price": 1.722,
+                    "unit": "Qd"
+                }
             }
         }
     },
@@ -504,29 +594,34 @@
         "last_level": 16,
         "prices": {
             "1": {
-                "price": 10.894,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 10.894,
+                    "unit": "Q"
+                }
             },
             "2": {
-                "price": 5.511,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 5.511,
+                    "unit": "s"
+                }
             },
             "4": {
-                "price": 2.737,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 2.737,
+                    "unit": "S"
+                }
             },
             "8": {
-                "price": 1.316,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 1.316,
+                    "unit": "o"
+                }
             },
             "16": {
-                "price": 560.123,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 560.123,
+                    "unit": "o"
+                }
             }
         }
     },
@@ -536,504 +631,604 @@
         "last_level": 990,
         "prices": {
             "0": {
-                "price": 41.989,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 41.989,
+                    "unit": "Q"
+                }
             },
             "10": {
-                "price": 60.008,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 60.008,
+                    "unit": "Q"
+                }
             },
             "20": {
-                "price": 85.459,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 85.459,
+                    "unit": "Q"
+                }
             },
             "30": {
-                "price": 121.373,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 121.373,
+                    "unit": "Q"
+                }
             },
             "40": {
-                "price": 172.437,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 172.437,
+                    "unit": "Q"
+                }
             },
             "50": {
-                "price": 246.199,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 246.199,
+                    "unit": "Q"
+                }
             },
             "60": {
-                "price": 350.325,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 350.325,
+                    "unit": "Q"
+                }
             },
             "70": {
-                "price": 497.241,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 497.241,
+                    "unit": "Q"
+                }
             },
             "80": {
-                "price": 707.35,
-                "unit": "Q",
-                "discount_level": 12
+                "12": {
+                    "price": 707.35,
+                    "unit": "Q"
+                }
             },
             "90": {
-                "price": 1.009,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 1.009,
+                    "unit": "s"
+                }
             },
             "100": {
-                "price": 1.434,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 1.434,
+                    "unit": "s"
+                }
             },
             "110": {
-                "price": 2.035,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 2.035,
+                    "unit": "s"
+                }
             },
             "120": {
-                "price": 2.899,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 2.899,
+                    "unit": "s"
+                }
             },
             "130": {
-                "price": 4.131,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 4.131,
+                    "unit": "s"
+                }
             },
             "140": {
-                "price": 5.869,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 5.869,
+                    "unit": "s"
+                }
             },
             "150": {
-                "price": 8.231,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 8.231,
+                    "unit": "s"
+                }
             },
             "160": {
-                "price": 11.865,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 11.865,
+                    "unit": "s"
+                }
             },
             "170": {
-                "price": 16.895,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 16.895,
+                    "unit": "s"
+                }
             },
             "180": {
-                "price": 23.988,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 23.988,
+                    "unit": "s"
+                }
             },
             "190": {
-                "price": 33.998,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 33.998,
+                    "unit": "s"
+                }
             },
             "200": {
-                "price": 48.524,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 48.524,
+                    "unit": "s"
+                }
             },
             "210": {
-                "price": 69.04,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 69.04,
+                    "unit": "s"
+                }
             },
             "220": {
-                "price": 97.961,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 97.961,
+                    "unit": "s"
+                }
             },
             "230": {
-                "price": 138.988,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 138.988,
+                    "unit": "s"
+                }
             },
             "240": {
-                "price": 198.267,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 198.267,
+                    "unit": "s"
+                }
             },
             "250": {
-                "price": 281.873,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 281.873,
+                    "unit": "s"
+                }
             },
             "260": {
-                "price": 399.721,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 399.721,
+                    "unit": "s"
+                }
             },
             "270": {
-                "price": 567.9,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 567.9,
+                    "unit": "s"
+                }
             },
             "280": {
-                "price": 809.404,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 809.404,
+                    "unit": "s"
+                }
             },
             "290": {
-                "price": 1.15,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 1.15,
+                    "unit": "S"
+                }
             },
             "300": {
-                "price": 1.63,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 1.63,
+                    "unit": "S"
+                }
             },
             "310": {
-                "price": 2.319,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 2.319,
+                    "unit": "S"
+                }
             },
             "320": {
-                "price": 3.302,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 3.302,
+                    "unit": "S"
+                }
             },
             "330": {
-                "price": 4.687,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 4.687,
+                    "unit": "S"
+                }
             },
             "340": {
-                "price": 6.64,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 6.64,
+                    "unit": "S"
+                }
             },
             "350": {
-                "price": 9.457,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 9.457,
+                    "unit": "S"
+                }
             },
             "360": {
-                "price": 13.357,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 13.357,
+                    "unit": "S"
+                }
             },
             "370": {
-                "price": 19.088,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 19.088,
+                    "unit": "S"
+                }
             },
             "380": {
-                "price": 26.985,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 26.985,
+                    "unit": "S"
+                }
             },
             "390": {
-                "price": 38.356,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 38.356,
+                    "unit": "S"
+                }
             },
             "400": {
-                "price": 54.322,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 54.322,
+                    "unit": "S"
+                }
             },
             "410": {
-                "price": 76.678,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 76.678,
+                    "unit": "S"
+                }
             },
             "420": {
-                "price": 108.135,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 108.135,
+                    "unit": "S"
+                }
             },
             "430": {
-                "price": 153.337,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 153.337,
+                    "unit": "S"
+                }
             },
             "440": {
-                "price": 216.677,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 216.677,
+                    "unit": "S"
+                }
             },
             "450": {
-                "price": 305.374,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 305.374,
+                    "unit": "S"
+                }
             },
             "460": {
-                "price": 430.953,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 430.953,
+                    "unit": "S"
+                }
             },
             "470": {
-                "price": 610.323,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 610.323,
+                    "unit": "S"
+                }
             },
             "480": {
-                "price": 861.598,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 861.598,
+                    "unit": "S"
+                }
             },
             "490": {
-                "price": 1.214,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 1.214,
+                    "unit": "o"
+                }
             },
             "500": {
-                "price": 1.714,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 1.714,
+                    "unit": "o"
+                }
             },
             "510": {
-                "price": 2.426,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 2.426,
+                    "unit": "o"
+                }
             },
             "520": {
-                "price": 3.421,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 3.421,
+                    "unit": "o"
+                }
             },
             "530": {
-                "price": 4.814,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 4.814,
+                    "unit": "o"
+                }
             },
             "540": {
-                "price": 6.799,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 6.799,
+                    "unit": "o"
+                }
             },
             "550": {
-                "price": 9.591,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 9.591,
+                    "unit": "o"
+                }
             },
             "560": {
-                "price": 13.481,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 13.481,
+                    "unit": "o"
+                }
             },
             "570": {
-                "price": 18.894,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 18.894,
+                    "unit": "o"
+                }
             },
             "580": {
-                "price": 26.62,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 26.62,
+                    "unit": "o"
+                }
             },
             "590": {
-                "price": 37.382,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 37.382,
+                    "unit": "o"
+                }
             },
             "600": {
-                "price": 52.301,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 52.301,
+                    "unit": "o"
+                }
             },
             "610": {
-                "price": 73.023,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 73.023,
+                    "unit": "o"
+                }
             },
             "620": {
-                "price": 102.458,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 102.458,
+                    "unit": "o"
+                }
             },
             "630": {
-                "price": 143.144,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 143.144,
+                    "unit": "o"
+                }
             },
             "640": {
-                "price": 199.27,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 199.27,
+                    "unit": "o"
+                }
             },
             "650": {
-                "price": 277.314,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 277.314,
+                    "unit": "o"
+                }
             },
             "660": {
-                "price": 386.956,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 386.956,
+                    "unit": "o"
+                }
             },
             "670": {
-                "price": 537.71,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 537.71,
+                    "unit": "o"
+                }
             },
             "680": {
-                "price": 744.608,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 744.608,
+                    "unit": "o"
+                }
             },
             "690": {
-                "price": 1.032,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.032,
+                    "unit": "N"
+                }
             },
             "700": {
-                "price": 1.433,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.433,
+                    "unit": "N"
+                }
             },
             "710": {
-                "price": 1.979,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 1.979,
+                    "unit": "N"
+                }
             },
             "720": {
-                "price": 2.726,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 2.726,
+                    "unit": "N"
+                }
             },
             "730": {
-                "price": 3.764,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 3.764,
+                    "unit": "N"
+                }
             },
             "740": {
-                "price": 5.191,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 5.191,
+                    "unit": "N"
+                }
             },
             "750": {
-                "price": 7.132,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 7.132,
+                    "unit": "N"
+                }
             },
             "760": {
-                "price": 9.765,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 9.765,
+                    "unit": "N"
+                }
             },
             "770": {
-                "price": 13.424,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 13.424,
+                    "unit": "N"
+                }
             },
             "780": {
-                "price": 18.4,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 18.4,
+                    "unit": "N"
+                }
             },
             "790": {
-                "price": 25.123,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 25.123,
+                    "unit": "N"
+                }
             },
             "800": {
-                "price": 34.206,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 34.206,
+                    "unit": "N"
+                }
             },
             "810": {
-                "price": 46.779,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 46.779,
+                    "unit": "N"
+                }
             },
             "820": {
-                "price": 63.704,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 63.704,
+                    "unit": "N"
+                }
             },
             "830": {
-                "price": 86.427,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 86.427,
+                    "unit": "N"
+                }
             },
             "840": {
-                "price": 117.11,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 117.11,
+                    "unit": "N"
+                }
             },
             "850": {
-                "price": 159.067,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 159.067,
+                    "unit": "N"
+                }
             },
             "860": {
-                "price": 215.159,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 215.159,
+                    "unit": "N"
+                }
             },
             "870": {
-                "price": 289.957,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 289.957,
+                    "unit": "N"
+                }
             },
             "880": {
-                "price": 390.825,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 390.825,
+                    "unit": "N"
+                }
             },
             "890": {
-                "price": 527.061,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 527.061,
+                    "unit": "N"
+                }
             },
             "900": {
-                "price": 707.877,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 707.877,
+                    "unit": "N"
+                }
             },
             "910": {
-                "price": 947.76,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 947.76,
+                    "unit": "N"
+                }
             },
             "920": {
-                "price": 1.278,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.278,
+                    "unit": "d"
+                }
             },
             "930": {
-                "price": 1.733,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 1.733,
+                    "unit": "d"
+                }
             },
             "940": {
-                "price": 2.355,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 2.355,
+                    "unit": "d"
+                }
             },
             "950": {
-                "price": 3.202,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 3.202,
+                    "unit": "d"
+                }
             },
             "960": {
-                "price": 4.388,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 4.388,
+                    "unit": "d"
+                }
             },
             "970": {
-                "price": 6.015,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 6.015,
+                    "unit": "d"
+                }
             },
             "980": {
-                "price": 8.234,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 8.234,
+                    "unit": "d"
+                }
             },
             "990": {
-                "price": 11.263,
-                "unit": "d",
-                "discount_level": 12
+                "12": {
+                    "price": 11.263,
+                    "unit": "d"
+                }
             }
         }
     },
@@ -1043,104 +1238,124 @@
         "last_level": 190,
         "prices": {
             "0": {
-                "price": 12.594,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 12.594,
+                    "unit": "s"
+                }
             },
             "10": {
-                "price": 43.33,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 43.33,
+                    "unit": "s"
+                }
             },
             "20": {
-                "price": 147.866,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 147.866,
+                    "unit": "s"
+                }
             },
             "30": {
-                "price": 506.732,
-                "unit": "s",
-                "discount_level": 12
+                "12": {
+                    "price": 506.732,
+                    "unit": "s"
+                }
             },
             "40": {
-                "price": 1.732,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 1.732,
+                    "unit": "S"
+                }
             },
             "50": {
-                "price": 5.907,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 5.907,
+                    "unit": "S"
+                }
             },
             "60": {
-                "price": 20.147,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 20.147,
+                    "unit": "S"
+                }
             },
             "70": {
-                "price": 67.459,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 67.459,
+                    "unit": "S"
+                }
             },
             "80": {
-                "price": 226.678,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 226.678,
+                    "unit": "S"
+                }
             },
             "90": {
-                "price": 756.299,
-                "unit": "S",
-                "discount_level": 12
+                "12": {
+                    "price": 756.299,
+                    "unit": "S"
+                }
             },
             "100": {
-                "price": 2.527,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 2.527,
+                    "unit": "o"
+                }
             },
             "110": {
-                "price": 8.381,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 8.381,
+                    "unit": "o"
+                }
             },
             "120": {
-                "price": 27.368,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 27.368,
+                    "unit": "o"
+                }
             },
             "130": {
-                "price": 88.731,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 88.731,
+                    "unit": "o"
+                }
             },
             "140": {
-                "price": 281.63,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 281.63,
+                    "unit": "o"
+                }
             },
             "150": {
-                "price": 885.28,
-                "unit": "o",
-                "discount_level": 12
+                "12": {
+                    "price": 885.28,
+                    "unit": "o"
+                }
             },
             "160": {
-                "price": 2.729,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 2.729,
+                    "unit": "N"
+                }
             },
             "170": {
-                "price": 8.273,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 8.273,
+                    "unit": "N"
+                }
             },
             "180": {
-                "price": 24.695,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 24.695,
+                    "unit": "N"
+                }
             },
             "190": {
-                "price": 71.972,
-                "unit": "N",
-                "discount_level": 12
+                "12": {
+                    "price": 71.972,
+                    "unit": "N"
+                }
             }
         }
     }

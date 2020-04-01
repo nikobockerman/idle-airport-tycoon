@@ -1,5 +1,6 @@
 import json
 import shutil
+import statistics
 from decimal import Decimal as D
 
 import npyscreen
@@ -41,8 +42,19 @@ class Database:
             self.unit = unit
             self.discount_level = discount_level
 
-        def get_price(self):
-            return self.price * UNITS[self.unit]
+        def get_price(self, at_discount_level=None):
+            price = self.price * UNITS[self.unit]
+            if (
+                at_discount_level is None
+                or at_discount_level == self.discount_level
+            ):
+                return price
+
+            return (
+                price
+                / (1 - self.discount_level / 100)
+                * (1 - at_discount_level / 100)
+            )
 
     class Elem:
         def __init__(self, increase_type, increase_percent, last_level, prices):
@@ -51,34 +63,66 @@ class Database:
             self.last_level = last_level
             self.prices = prices
 
-        def get_next_payback_value(self, current_level):
-            if current_level not in self.prices:
-                return None
-            if self.increase_type == "double":
-                return self.prices[current_level].get_price() * 2
+        def _get_price(self, current_level, current_discount_level):
+            discounts = self.prices.get(current_level)
+            if discounts is None:
+                return None, False
 
-            multiplier = (
-                1 + self.increase_percent / 100 + current_level / 100
-            ) / (1 + current_level / 100)
-            return (
-                self.prices[current_level].get_price()
-                * multiplier
-                / (multiplier - 1)
+            price = discounts.get(current_discount_level)
+            if price is not None:
+                return price.get_price(), False
+
+            zero_discount_price = discounts.get(0)
+            if zero_discount_price is not None:
+                estimated_price = zero_discount_price.get_price(
+                    current_discount_level
+                )
+            else:
+                estimated_price = statistics.mean(
+                    (
+                        price.get_price(current_discount_level)
+                        for price in discounts.values()
+                    )
+                )
+
+            return estimated_price, True
+
+        def get_price_information(self, current_level, current_discount_level):
+            current_price, is_estimate = self._get_price(
+                current_level, current_discount_level
             )
+            if current_price is None:
+                return None, None, True
+
+            if self.increase_type == "double":
+                payback_price = current_price * 2
+            else:
+                multiplier = (
+                    1 + self.increase_percent / 100 + current_level / 100
+                ) / (1 + current_level / 100)
+                payback_price = current_price * multiplier / (multiplier - 1)
+
+            return current_price, payback_price, is_estimate
 
     def __init__(self, path):
         with open(path) as f:
             data = json.load(f)
 
         self.data = {}
-        for key, value in data.items():
-            prices = {
-                int(k): Database.Price(
-                    int(k), v["price"], v["unit"], v["discount_level"]
-                )
-                for k, v in value["prices"].items()
-            }
-            self.data[key] = Database.Elem(
+        for research_name, value in data.items():
+            prices = {}
+            for research_level, level_data in value["prices"].items():
+                discounts = {}
+                for discount_level, discount_data in level_data.items():
+                    discounts[int(discount_level)] = Database.Price(
+                        int(research_level),
+                        discount_data["price"],
+                        discount_data["unit"],
+                        int(discount_level),
+                    )
+                prices[int(research_level)] = discounts
+
+            self.data[research_name] = Database.Elem(
                 value["increase_type"],
                 value["increase_percent"],
                 value["last_level"],
@@ -87,12 +131,15 @@ class Database:
 
 
 class PaybackValue:
-    def __init__(self, research, cost, old_level, new_level, payback_value):
+    def __init__(
+        self, research, cost, is_estimate, payback_value, old_level, new_level
+    ):
         self.research = research
         self.cost = cost
+        self.is_estimate = is_estimate
+        self.payback_value = payback_value
         self.old_level = old_level
         self.new_level = new_level
-        self.payback_value = payback_value
 
 
 class Research:
@@ -111,7 +158,7 @@ class Research:
         else:
             self.level += self.db_elem.increase_percent
 
-    def get_payback_values(self, start_level=None):
+    def get_payback_values(self, current_discount_level, start_level=None):
         current_level = start_level
         if current_level is None:
             current_level = self.level
@@ -126,17 +173,26 @@ class Research:
                 and current_level > list(self.db_elem.prices.keys())[-1]
             ):
                 break
+
             if self.db_elem.increase_type == "double":
                 next_level = current_level * 2
             else:
                 next_level = current_level + self.db_elem.increase_percent
 
+            (
+                cost,
+                payback_value,
+                is_estimate,
+            ) = self.db_elem.get_price_information(
+                current_level, current_discount_level
+            )
             yield PaybackValue(
                 self,
-                self.db_elem.prices[current_level].get_price(),
+                cost,
+                is_estimate,
+                payback_value,
                 current_level,
                 next_level,
-                self.db_elem.get_next_payback_value(current_level),
             )
 
             current_level = next_level
@@ -173,10 +229,10 @@ class State:
         shutil.move(tmp_path, self._path)
 
 
-def get_next_payback_values(researches):
+def get_next_payback_values(researches, current_discount_level):
     values = []
     for r in researches:
-        value = next(r.get_payback_values(), None)
+        value = next(r.get_payback_values(current_discount_level), None)
         if value is not None:
             values.append(value)
 
@@ -189,7 +245,10 @@ def get_next_payback_values(researches):
     values = sort(values)
     while values:
         v = values.pop(0)
-        next_value = next(v.research.get_payback_values(v.new_level), None)
+        next_value = next(
+            v.research.get_payback_values(current_discount_level, v.new_level),
+            None,
+        )
         yield v
         if next_value is not None:
             values.append(next_value)
@@ -199,7 +258,9 @@ def get_next_payback_values(researches):
 class NextResearches(npyscreen.Form):
     def __init__(self, state, *args, **kwargs):
         self._state = state
-        self._value_generator = get_next_payback_values(self._state.researches)
+        self._value_generator = get_next_payback_values(
+            self._state.researches, self._state.discount_level
+        )
         self._grid = None
         super().__init__(args, kwargs)
 
@@ -235,11 +296,17 @@ class NextResearches(npyscreen.Form):
 
     @staticmethod
     def _get_row_data(value):
+        def print_cost():
+            result = print_price(value.cost)
+            if value.is_estimate:
+                return "* " + result
+            return result
+
         return [
             value.research.name,
             value.old_level,
             value.new_level,
-            print_price(value.cost),
+            print_cost(),
             print_price(value.payback_value)
             if value.payback_value is not None
             else "???",
