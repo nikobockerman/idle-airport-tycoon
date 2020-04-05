@@ -300,6 +300,10 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
                 self._get_row_data(next(self._value_generator))
             )
 
+    def pre_edit_loop(self):
+        super().pre_edit_loop()
+        self.set_editing(self._mark_done_button)
+
     def mark_done(self):
         research = self._grid.values[0][5]
         research.increase_level()
