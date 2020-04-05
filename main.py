@@ -96,6 +96,8 @@ class Database:
 
             if self.increase_type == "double":
                 payback_price = current_price * 2
+            elif self.increase_type == "triple":
+                payback_price = current_price * 3
             else:
                 multiplier = (
                     1 + self.increase_percent / 100 + current_level / 100
@@ -149,12 +151,14 @@ class Research:
         self.db_elem = db_elem
         if self.level is None:
             self.level = 0
-            if self.db_elem.increase_type == "double":
+            if self.db_elem.increase_type in ("double", "triple"):
                 self.level = 1
 
     def increase_level(self):
         if self.db_elem.increase_type == "double":
             self.level *= 2
+        elif self.db_elem.increase_type == "triple":
+            self.level *= 3
         else:
             self.level += self.db_elem.increase_percent
 
@@ -176,6 +180,8 @@ class Research:
 
             if self.db_elem.increase_type == "double":
                 next_level = current_level * 2
+            elif self.db_elem.increase_type == "triple":
+                next_level = current_level * 3
             else:
                 next_level = current_level + self.db_elem.increase_percent
 
@@ -186,6 +192,10 @@ class Research:
             ) = self.db_elem.get_price_information(
                 current_level, current_discount_level
             )
+
+            if cost is None:
+                break
+
             yield PaybackValue(
                 self,
                 cost,

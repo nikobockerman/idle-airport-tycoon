@@ -1,4 +1,64 @@
 {
+    "More tickets": {
+        "increase_type": "percent",
+        "increase_percent": 10,
+        "last_level": 490,
+        "prices": {}
+    },
+    "Seat improvements": {
+        "increase_type": "percent",
+        "increase_percent": 25,
+        "last_level": 975,
+        "prices": {}
+    },
+    "Air conditioning": {
+        "increase_type": "percent",
+        "increase_percent": 25,
+        "last_level": 725,
+        "prices": {}
+    },
+    "VIP Ticket": {
+        "increase_type": "double",
+        "increase_percent": 0,
+        "last_level": 1,
+        "prices": {}
+    },
+    "Super VIP Tickets": {
+        "increase_type": "triple",
+        "increase_percent": 0,
+        "last_level": 1,
+        "prices": {}
+    },
+    "Robotic system": {
+        "increase_type": "percent",
+        "increase_percent": 5,
+        "last_level": 245,
+        "prices": {}
+    },
+    "Ticket with extras": {
+        "increase_type": "percent",
+        "increase_percent": 25,
+        "last_level": 850,
+        "prices": {}
+    },
+    "Hire IT Staff": {
+        "increase_type": "percent",
+        "increase_percent": 15,
+        "last_level": 435,
+        "prices": {}
+    },
+    "Ticket with travel guide": {
+        "increase_type": "percent",
+        "increase_percent": 15,
+        "last_level": 435,
+        "prices": {}
+    },
+    "Ticket with tasting menu": {
+        "increase_type": "percent",
+        "increase_percent": 15,
+        "last_level": 885,
+        "prices": {}
+    },
     "Non-Stop Flight": {
         "increase_type": "percent",
         "increase_percent": 25,
