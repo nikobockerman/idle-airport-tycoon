@@ -98,7 +98,7 @@ class Database:
                 current_level, current_discount_level
             )
             if current_price is None:
-                return None, None, True
+                return current_price, None, is_estimate
 
             if self.increase_type == "double":
                 payback_price = current_price * 2
@@ -112,6 +112,67 @@ class Database:
 
             return current_price, payback_price, is_estimate
 
+        def get_new_price_estimate(self, current_level, current_discount_level):
+            def get_consecutive_pairs():
+                def get_level_pairs():
+                    def get_levels():
+                        level = 0
+                        if self.increase_type in ("double", "triple"):
+                            level = 1
+                        while level <= self.last_level:
+                            yield level
+                            if self.increase_type == "double":
+                                level *= 2
+                            elif self.increase_type == "triple":
+                                level *= 3
+                            else:
+                                level += self.increase_percent
+
+                    try:
+                        levels_gen = get_levels()
+                        level_1 = next(levels_gen)
+                        level_2 = next(levels_gen)
+                        while True:
+                            yield level_1, level_2
+                            level_1 = level_2
+                            level_2 = next(levels_gen)
+                    except StopIteration:
+                        pass
+
+                try:
+                    level_pairs_gen = get_level_pairs()
+                    while True:
+                        level_1, level_2 = next(level_pairs_gen)
+                        if level_1 in self.prices and level_2 in self.prices:
+                            yield level_1, level_2
+                except StopIteration:
+                    pass
+
+            def calculate_multiplier(level_1, level_2):
+                try:
+                    discounts_1 = self.prices[level_1]
+                    discounts_2 = self.prices[level_2]
+                except KeyError:
+                    return
+
+                discount_set_1 = set(discounts_1)
+                discount_set_2 = set(discounts_2)
+                for discount in discount_set_1.intersection(discount_set_2):
+                    yield discounts_2[discount].get_price() / discounts_1[
+                        discount
+                    ].get_price()
+
+            def get_multipliers():
+                for level_1, level_2 in get_consecutive_pairs():
+                    for multiplier in calculate_multiplier(level_1, level_2):
+                        yield multiplier
+
+            try:
+                estimate = statistics.mean(get_multipliers())
+                return estimate
+            except statistics.StatisticsError:
+                return None
+
         def add_cost(self, level, discount_level, price, unit):
             discounts = self.prices.get(level)
             if discounts is None:
@@ -123,6 +184,16 @@ class Database:
             discounts[discount_level] = Database.Price(
                 level, price, unit, discount_level
             )
+
+        def mark_completed(self, one_after_last_level):
+            last_level = one_after_last_level
+            if self.increase_type == "double":
+                last_level //= 2
+            elif self.increase_type == "triple":
+                last_level //= 3
+            else:
+                last_level -= self.increase_percent
+            self.last_level = last_level
 
     def __init__(self, path):
         self._path = path
@@ -387,6 +458,18 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
 
 
 class QueryPriceForm(npyscreen.ActionPopup):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        completion_text = "Reseach is completed"
+        self._add_button(
+            "completion_button",
+            npyscreen.MiniButtonPress,
+            completion_text,
+            -2,
+            -22 - len(completion_text),
+            self._mark_research_completed,
+        )
+
     def create(self):
         self._current_discount_level = None
         self._research = None
@@ -403,24 +486,51 @@ class QueryPriceForm(npyscreen.ActionPopup):
         self.nextrely += 1
         self._cost_field = self.add(npyscreen.TitleText, name="Cost:", value="")
         self._unit_field = self.add(npyscreen.TitleText, name="Unit:", value="")
+        # self.nextrely += 1
+        # self._mark_completed = self.add(
+        #    npyscreen.ButtonPress,
+        #    name="Research is completed",
+        #    when_pressed_function=self._mark_research_completed,
+        # )
 
     def set_values(
-        self, current_discount_level, research, estimated_cost, estimated_unit
+        self,
+        current_discount_level,
+        research,
+        estimated_cost,
+        estimated_unit,
+        mode,
     ):
         self._current_discount_level = current_discount_level
         self._research = research
         self._estimated_cost = estimated_cost
         self._estimated_unit = estimated_unit
+        self._mode = mode
 
     def beforeEditing(self):
         self._research_name_field.value = self._research.name
         self._level_from_field.value = str(self._research.level)
-        self._cost_field.value = str(self._estimated_cost)
-        self._unit_field.value = self._estimated_unit
+        self._cost_field.value = ""
+        if self._estimated_cost is not None:
+            self._cost_field.value = str(self._estimated_cost)
+        self._unit_field.value = ""
+        if self._estimated_unit is not None:
+            self._unit_field.value = self._estimated_unit
+        if self._mode == "discount":
+            self._added_buttons["completion_button"].hidden = True
+            self._initial_widget = self._added_buttons["ok_button"]
+        else:
+            self._added_buttons["completion_button"].hidden = False
+            self._initial_widget = self._cost_field
 
     def pre_edit_loop(self):
         super().pre_edit_loop()
-        self.set_editing(self.get_widget(3))
+        self.set_editing(self._initial_widget)
+
+    def _mark_research_completed(self):
+        self._research.db_elem.mark_completed(self._research.level)
+        self.parentApp.database.save()
+        self.editing = False
 
     def on_ok(self):
         try:
@@ -463,7 +573,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
     def ask_for_database_updates(self):
         assert self.get_next_database_update_query_data is None
 
-        def get_researches_needing_database_update():
+        def get_researches_needing_update():
             for research_name in self.database.data:
                 research = next(
                     (
@@ -476,18 +586,30 @@ class IdleAirport(npyscreen.NPSAppManaged):
                     research.level, self.state.discount_level
                 )
                 if price is not None and is_estimate:
-                    yield research, price
+                    yield "discount", research, price
+
+                if price is None and (
+                    research.db_elem.last_level is None
+                    or (
+                        research.level <= research.db_elem.last_level
+                        and research.level not in research.db_elem.prices
+                    )
+                ):
+                    estimated_price = research.db_elem.get_new_price_estimate(
+                        research.level, self.state.discount_level
+                    )
+                    yield "level", research, estimated_price
 
         self.get_next_database_update_query_data = (
-            get_researches_needing_database_update()
+            get_researches_needing_update()
         )
         return self.set_next_database_update_form()
 
     def set_next_database_update_form(self):
         assert self.get_next_database_update_query_data is not None
 
-        research, price = next(
-            self.get_next_database_update_query_data, (None, None)
+        update_type, research, estimated_price = next(
+            self.get_next_database_update_query_data, (None, None, None)
         )
 
         if research is None:
@@ -495,9 +617,17 @@ class IdleAirport(npyscreen.NPSAppManaged):
             return False
 
         current_discount_level = self.state.discount_level
-        cost, unit = factor_price(price)
+        if estimated_price is None:
+            estimated_cost = None
+            estimated_unit = None
+        else:
+            estimated_cost, estimated_unit = factor_price(estimated_price)
         self.getForm("ASK_PRICE").set_values(
-            current_discount_level, research, cost, unit
+            current_discount_level,
+            research,
+            estimated_cost,
+            estimated_unit,
+            update_type,
         )
         self.getForm("ASK_PRICE").resize()
         return True
