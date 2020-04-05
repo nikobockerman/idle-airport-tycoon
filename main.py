@@ -69,64 +69,73 @@ class Database:
             self.last_level = last_level
             self.prices = prices
 
-        def _get_price(self, current_level, current_discount_level):
-            discounts = self.prices.get(current_level)
+        def _get_price(self, level, discount_level):
+            if self.last_level is not None and level >= self.last_level:
+                return None, False
+
+            discounts = self.prices.get(level)
             if discounts is None:
                 return None, False
 
-            price = discounts.get(current_discount_level)
+            price = discounts.get(discount_level)
             if price is not None:
                 return price.get_price(), False
 
             zero_discount_price = discounts.get(0)
             if zero_discount_price is not None:
-                estimated_price = zero_discount_price.get_price(
-                    current_discount_level
-                )
+                estimated_price = zero_discount_price.get_price(discount_level)
             else:
                 estimated_price = statistics.mean(
                     (
-                        price.get_price(current_discount_level)
+                        price.get_price(discount_level)
                         for price in discounts.values()
                     )
                 )
 
             return estimated_price, True
 
-        def get_price_information(self, current_level, current_discount_level):
-            current_price, is_estimate = self._get_price(
-                current_level, current_discount_level
+        def get_price_information(self, level, discount_level):
+            price, is_estimate = self._get_price(level, discount_level)
+            return price, is_estimate
+
+        def get_price_info_with_payback(self, level, discount_level):
+            price, is_estimate = self.get_price_information(
+                level, discount_level
             )
-            if current_price is None:
-                return current_price, None, is_estimate
+
+            if price is None:
+                price = self.get_new_price_estimate(level, discount_level)
+                is_estimate = True
+
+            if price is None:
+                return None, None, False
 
             if self.increase_type == "double":
-                payback_price = current_price * 2
+                payback_price = price * 2
             elif self.increase_type == "triple":
-                payback_price = current_price * 3
+                payback_price = price * 3
             else:
+                level_percentage = self.increase_percent * level
                 multiplier = (
-                    1 + self.increase_percent / 100 + current_level / 100
-                ) / (1 + current_level / 100)
-                payback_price = current_price * multiplier / (multiplier - 1)
+                    1 + self.increase_percent / 100 + level_percentage / 100
+                ) / (1 + level_percentage / 100)
+                payback_price = price * multiplier / (multiplier - 1)
 
-            return current_price, payback_price, is_estimate
+            return price, payback_price, is_estimate
 
-        def get_new_price_estimate(self, current_level, current_discount_level):
+        def get_new_price_estimate(self, level, discount_level):
             def get_consecutive_pairs():
                 def get_level_pairs():
                     def get_levels():
-                        level = 0
-                        if self.increase_type in ("double", "triple"):
-                            level = 1
-                        while level <= self.last_level:
-                            yield level
-                            if self.increase_type == "double":
-                                level *= 2
-                            elif self.increase_type == "triple":
-                                level *= 3
-                            else:
-                                level += self.increase_percent
+                        _level = 0
+                        stop_level = self.last_level
+                        if stop_level is None:
+                            if not self.prices:
+                                return
+                            stop_level = max(self.prices.keys()) + 1
+                        while _level < stop_level:
+                            yield _level
+                            _level += 1
 
                     try:
                         levels_gen = get_levels()
@@ -167,9 +176,22 @@ class Database:
                     for multiplier in calculate_multiplier(level_1, level_2):
                         yield multiplier
 
+            def get_estimates(multiplier):
+                for _level, discounts in self.prices.items():
+                    level_multiplier = multiplier ** (level - _level)
+                    price = discounts.get(discount_level)
+                    if price is None:
+                        for price in discounts.values():
+                            yield price.get_price(
+                                discount_level
+                            ) * level_multiplier
+                    else:
+                        yield price.get_price(discount_level) * level_multiplier
+
             try:
-                estimate = statistics.mean(get_multipliers())
-                return estimate
+                multiplier = statistics.mean(get_multipliers())
+                estimated_price = statistics.mean(get_estimates(multiplier))
+                return estimated_price
             except statistics.StatisticsError:
                 return None
 
@@ -185,14 +207,7 @@ class Database:
                 level, price, unit, discount_level
             )
 
-        def mark_completed(self, one_after_last_level):
-            last_level = one_after_last_level
-            if self.increase_type == "double":
-                last_level //= 2
-            elif self.increase_type == "triple":
-                last_level //= 3
-            else:
-                last_level -= self.increase_percent
+        def mark_completed(self, last_level):
             self.last_level = last_level
 
     def __init__(self, path):
@@ -249,79 +264,49 @@ class Database:
 
 
 class PaybackValue:
-    def __init__(
-        self, research, cost, is_estimate, payback_value, old_level, new_level
-    ):
+    def __init__(self, research, cost, is_estimate, payback_value, level):
         self.research = research
         self.cost = cost
         self.is_estimate = is_estimate
         self.payback_value = payback_value
-        self.old_level = old_level
-        self.new_level = new_level
+        self.level = level
 
 
 class Research:
-    def __init__(self, name, start, db_elem):
+    def __init__(self, name, start_level, db_elem):
         self.name = name
-        self.level = start
+        self.level = start_level
         self.db_elem = db_elem
         if self.level is None:
             self.level = 0
-            if self.db_elem.increase_type in ("double", "triple"):
-                self.level = 1
 
     def increase_level(self):
-        if self.db_elem.increase_type == "double":
-            self.level *= 2
-        elif self.db_elem.increase_type == "triple":
-            self.level *= 3
-        else:
-            self.level += self.db_elem.increase_percent
+        self.level += 1
 
-    def get_payback_values(self, current_discount_level, start_level=None):
-        current_level = start_level
-        if current_level is None:
-            current_level = self.level
+    def get_payback_values(self, discount_level, start_level=None):
+        level = start_level
+        if level is None:
+            level = self.level
         while True:
             if (
                 self.db_elem.last_level is not None
-                and current_level > self.db_elem.last_level
-            ):
-                break
-            if (
-                self.db_elem.last_level is None
-                and current_level > list(self.db_elem.prices.keys())[-1]
+                and level >= self.db_elem.last_level
             ):
                 break
 
-            if self.db_elem.increase_type == "double":
-                next_level = current_level * 2
-            elif self.db_elem.increase_type == "triple":
-                next_level = current_level * 3
-            else:
-                next_level = current_level + self.db_elem.increase_percent
 
             (
                 cost,
                 payback_value,
                 is_estimate,
-            ) = self.db_elem.get_price_information(
-                current_level, current_discount_level
-            )
+            ) = self.db_elem.get_price_info_with_payback(level, discount_level)
 
             if cost is None:
                 break
 
-            yield PaybackValue(
-                self,
-                cost,
-                is_estimate,
-                payback_value,
-                current_level,
-                next_level,
-            )
+            yield PaybackValue(self, cost, is_estimate, payback_value, level)
 
-            current_level = next_level
+            level += 1
 
 
 class State:
@@ -355,10 +340,10 @@ class State:
         shutil.move(tmp_path, self._path)
 
 
-def get_next_payback_values(researches, current_discount_level):
+def get_next_payback_values(researches, discount_level):
     values = []
     for r in researches:
-        value = next(r.get_payback_values(current_discount_level), None)
+        value = next(r.get_payback_values(discount_level), None)
         if value is not None:
             values.append(value)
 
@@ -372,8 +357,7 @@ def get_next_payback_values(researches, current_discount_level):
     while values:
         v = values.pop(0)
         next_value = next(
-            v.research.get_payback_values(current_discount_level, v.new_level),
-            None,
+            v.research.get_payback_values(discount_level, v.level + 1), None,
         )
         yield v
         if next_value is not None:
@@ -392,7 +376,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         self._grid = self.add(
             npyscreen.SimpleGrid,
             name="Grid",
-            columns=5,
+            columns=4,
             select_whole_line=True,
             max_height=10,
         )
@@ -422,7 +406,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         self.set_editing(self._mark_done_button)
 
     def mark_done(self):
-        research = self._grid.values[0][5]
+        research = self._grid.values[0][4]
         research.increase_level()
         self._state.save()
         del self._grid.values[0]
@@ -443,12 +427,12 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
             result = print_price(value.cost)
             if value.is_estimate:
                 return "* " + result
-            return result
+            else:
+                return "  " + result
 
         return [
             value.research.name,
-            value.old_level,
-            value.new_level,
+            value.level,
             print_cost(),
             print_price(value.payback_value)
             if value.payback_value is not None
@@ -471,10 +455,11 @@ class QueryPriceForm(npyscreen.ActionPopup):
         )
 
     def create(self):
-        self._current_discount_level = None
+        self._discount_level = None
         self._research = None
         self._estimated_cost = None
         self._estimated_unit = None
+        self._mode = None
 
         self.add(npyscreen.FixedText, value="Add reserch cost to database")
         self._research_name_field = self.add(
@@ -486,22 +471,11 @@ class QueryPriceForm(npyscreen.ActionPopup):
         self.nextrely += 1
         self._cost_field = self.add(npyscreen.TitleText, name="Cost:", value="")
         self._unit_field = self.add(npyscreen.TitleText, name="Unit:", value="")
-        # self.nextrely += 1
-        # self._mark_completed = self.add(
-        #    npyscreen.ButtonPress,
-        #    name="Research is completed",
-        #    when_pressed_function=self._mark_research_completed,
-        # )
 
     def set_values(
-        self,
-        current_discount_level,
-        research,
-        estimated_cost,
-        estimated_unit,
-        mode,
+        self, discount_level, research, estimated_cost, estimated_unit, mode,
     ):
-        self._current_discount_level = current_discount_level
+        self._discount_level = discount_level
         self._research = research
         self._estimated_cost = estimated_cost
         self._estimated_unit = estimated_unit
@@ -547,7 +521,7 @@ class QueryPriceForm(npyscreen.ActionPopup):
             return True
 
         self._research.db_elem.add_cost(
-            self._research.level, self._current_discount_level, price, unit
+            self._research.level, self._discount_level, price, unit
         )
         self.parentApp.database.save()
         return False
@@ -582,7 +556,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
                         if r.name == research_name
                     )
                 )
-                price, _, is_estimate = research.db_elem.get_price_information(
+                price, is_estimate = research.db_elem.get_price_information(
                     research.level, self.state.discount_level
                 )
                 if price is not None and is_estimate:
@@ -591,7 +565,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
                 if price is None and (
                     research.db_elem.last_level is None
                     or (
-                        research.level <= research.db_elem.last_level
+                        research.level < research.db_elem.last_level
                         and research.level not in research.db_elem.prices
                     )
                 ):
@@ -616,14 +590,13 @@ class IdleAirport(npyscreen.NPSAppManaged):
             self.get_next_database_update_query_data = None
             return False
 
-        current_discount_level = self.state.discount_level
         if estimated_price is None:
             estimated_cost = None
             estimated_unit = None
         else:
             estimated_cost, estimated_unit = factor_price(estimated_price)
         self.getForm("ASK_PRICE").set_values(
-            current_discount_level,
+            self.state.discount_level,
             research,
             estimated_cost,
             estimated_unit,
