@@ -265,7 +265,7 @@ def get_next_payback_values(researches, current_discount_level):
             values = sort(values)
 
 
-class NextResearches(npyscreen.Form):
+class NextResearches(npyscreen.FormBaseNewExpanded):
     def __init__(self, state, *args, **kwargs):
         self._state = state
         self._value_generator = get_next_payback_values(
@@ -282,27 +282,37 @@ class NextResearches(npyscreen.Form):
             select_whole_line=True,
             max_height=10,
         )
+
+        self._mark_done_button = self.add(
+            npyscreen.ButtonPress,
+            name="MarkDone",
+            when_pressed_function=self.mark_done,
+        )
+
+        self._exit_button = self.add(
+            npyscreen.ButtonPress, name="Exit", when_pressed_function=self.exit
+        )
+
+    def beforeEditing(self):
         self._grid.values = []
         for _ in range(10):
             self._grid.values.append(
                 self._get_row_data(next(self._value_generator))
             )
 
-        def mark_done():
-            research = self._grid.values[0][5]
-            research.increase_level()
-            self._state.save()
-            del self._grid.values[0]
-            self._grid.values.append(
-                self._get_row_data(next(self._value_generator))
-            )
-            self._grid.update()
-
-        self._mark_done_button = self.add(
-            npyscreen.ButtonPress,
-            name="MarkDone",
-            when_pressed_function=mark_done,
+    def mark_done(self):
+        research = self._grid.values[0][5]
+        research.increase_level()
+        self._state.save()
+        del self._grid.values[0]
+        self._grid.values.append(
+            self._get_row_data(next(self._value_generator))
         )
+        self._grid.update()
+
+    def exit(self):
+        self.editing = False
+        self.parentApp.setNextForm(None)
 
     @staticmethod
     def _get_row_data(value):
