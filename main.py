@@ -1,3 +1,4 @@
+import itertools
 import json
 import shutil
 import statistics
@@ -6,38 +7,83 @@ from decimal import Decimal as D
 import npyscreen
 import simplejson
 
-UNITS = {
-    "M": 10 ** 6,
-    "B": 10 ** 9,
-    "T": 10 ** 12,
-    "q": 10 ** 15,
-    "Q": 10 ** 18,
-    "s": 10 ** 21,
-    "S": 10 ** 24,
-    "o": 10 ** 27,
-    "N": 10 ** 30,
-    "d": 10 ** 33,
-    "U": 10 ** 36,
-    "Td": 10 ** 39,  # ???
-    "Qd": 10 ** 42,  # ???
-    "qd": 10 ** 45,  # ???
-}
+
+class Unit:
+    def __init__(self, short_name, long_name, exponent):
+        self._short_name = short_name
+        self._long_name = long_name
+        self._exponent = exponent
+        self._multiplier = 10 ** self._exponent
+        # self._divider =
+
+    @property
+    def short(self):
+        return self._short_name
+
+    @property
+    def exp(self):
+        return self._exponent
+
+    @property
+    def multiplier(self):
+        return self._multiplier
 
 
-def get_unit(exp):
-    return next((k for k, v in UNITS.items() if D(v).log10() == exp))
+class UnitStorage:
+    def __init__(self):
+        self._db = [
+            Unit("", "", 0),
+            Unit("M", "Millions", 6),
+            Unit("B", "Billions", 9),
+            Unit("T", "Trillions", 12),
+            Unit("q", "quadrillions", 15),
+            Unit("Q", "Quintillions", 18),
+            Unit("s", "sextillions", 21),
+            Unit("S", "Septillions", 24),
+            Unit("o", "Octillions", 27),
+            Unit("N", "Nonillions", 30),
+            Unit("d", "Decillions", 33),
+            Unit("U", "Undecillions", 36),
+            Unit("D", "Duodecillions", 39),
+            Unit("Td", "???", 42),
+            Unit("qd", "???", 45),
+            Unit("Qd", "???", 48),
+        ]
+
+        self._exp_map = {unit.exp: unit for unit in self._db}
+        self._unit_short_map = {unit.short: unit for unit in self._db}
+
+    def get_unit_for_exponent(self, exp):
+        return self._exp_map[exp]
+
+    def is_valid_unit_short(self, unit_short):
+        return unit_short in self._unit_short_map
+
+    def get_unit_for_short(self, unit_short):
+        return self._unit_short_map[unit_short]
+
+
+UNITS = UnitStorage()
 
 
 def factor_price(price):
     x = D(price)
-    exp = x.adjusted()
-    exp -= exp % 3
-    return (x.scaleb(-exp).quantize(D("1.000"))), get_unit(exp)
+    exp_adjusted = x.adjusted()
+    if exp_adjusted <= 7:
+        exp = 0
+        q = D("1.")
+    else:
+        exp = exp_adjusted - exp_adjusted % 3
+        q = D(".001")
+    return (
+        (x.scaleb(-exp).quantize(q)),
+        UNITS.get_unit_for_exponent(exp),
+    )
 
 
 def print_price(price):
     cost, unit = factor_price(price)
-    return "{} {}".format(cost, unit)
+    return "{} {}".format(cost, unit.short)
 
 
 class Database:
@@ -49,18 +95,19 @@ class Database:
             self.discount_level = discount_level
 
         def get_price(self, at_discount_level=None):
-            price = self.price * UNITS[self.unit]
+            price = self.price * self.unit.multiplier
             if (
                 at_discount_level is None
                 or at_discount_level == self.discount_level
             ):
                 return price
 
-            return (
-                price
-                / (1 - self.discount_level / 100)
-                * (1 - at_discount_level / 100)
-            )
+            base_price = price / (1 - self.discount_level / 100)
+            base_price, unit = factor_price(base_price)
+            base_price = float(base_price) * unit.multiplier
+            estimated_price = base_price * (1 - at_discount_level / 100)
+
+            return estimated_price
 
     class Elem:
         def __init__(self, increase_type, increase_percent, last_level, prices):
@@ -127,22 +174,23 @@ class Database:
             def get_consecutive_pairs():
                 def get_level_pairs():
                     def get_levels():
-                        _level = 0
-                        stop_level = self.last_level
-                        if stop_level is None:
+                        stop_level = 0
+                        _level = self.last_level
+                        if _level is None:
                             if not self.prices:
                                 return
-                            stop_level = max(self.prices.keys()) + 1
-                        while _level < stop_level:
+                            _level = max(self.prices.keys()) + 1
+                        _level -= 1
+                        while _level >= stop_level:
                             yield _level
-                            _level += 1
+                            _level -= 1
 
                     try:
                         levels_gen = get_levels()
                         level_1 = next(levels_gen)
                         level_2 = next(levels_gen)
                         while True:
-                            yield level_1, level_2
+                            yield level_2, level_1
                             level_1 = level_2
                             level_2 = next(levels_gen)
                     except StopIteration:
@@ -166,18 +214,25 @@ class Database:
 
                 discount_set_1 = set(discounts_1)
                 discount_set_2 = set(discounts_2)
+                discounts = []
                 for discount in discount_set_1.intersection(discount_set_2):
-                    yield discounts_2[discount].get_price() / discounts_1[
-                        discount
-                    ].get_price()
+                    discounts.append(
+                        discounts_2[discount].get_price()
+                        / discounts_1[discount].get_price()
+                    )
+                if not discounts:
+                    return None
+                return statistics.mean(discounts)
 
             def get_multipliers():
                 for level_1, level_2 in get_consecutive_pairs():
-                    for multiplier in calculate_multiplier(level_1, level_2):
+                    multiplier = calculate_multiplier(level_1, level_2)
+                    if multiplier is not None:
                         yield multiplier
 
             def get_estimates(multiplier):
-                for _level, discounts in self.prices.items():
+                for _level in reversed(list(self.prices.keys())):
+                    discounts = self.prices[_level]
                     level_multiplier = multiplier ** (level - _level)
                     price = discounts.get(discount_level)
                     if price is None:
@@ -189,13 +244,16 @@ class Database:
                         yield price.get_price(discount_level) * level_multiplier
 
             try:
-                multiplier = statistics.mean(get_multipliers())
-                estimated_price = statistics.mean(get_estimates(multiplier))
+                multipliers = itertools.islice(get_multipliers(), 5)
+                multiplier = statistics.mean(multipliers)
+                estimated_price = statistics.mean(
+                    itertools.islice(get_estimates(multiplier), 5)
+                )
                 return estimated_price
             except statistics.StatisticsError:
                 return None
 
-        def add_cost(self, level, discount_level, price, unit):
+        def add_cost(self, level, discount_level, price, unit_short):
             discounts = self.prices.get(level)
             if discounts is None:
                 discounts = {}
@@ -204,7 +262,10 @@ class Database:
             assert discount_level not in discounts
 
             discounts[discount_level] = Database.Price(
-                level, price, unit, discount_level
+                level,
+                price,
+                UNITS.get_unit_for_short(unit_short),
+                discount_level,
             )
 
         def mark_completed(self, last_level):
@@ -224,7 +285,7 @@ class Database:
                     discounts[int(discount_level)] = Database.Price(
                         int(research_level),
                         discount_data["price"],
-                        discount_data["unit"],
+                        UNITS.get_unit_for_short(discount_data["unit"]),
                         int(discount_level),
                     )
                 prices[int(research_level)] = discounts
@@ -247,7 +308,7 @@ class Database:
                     db_price, db_unit = factor_price(price.get_price())
                     db_discounts[str(discount_level)] = {
                         "price": db_price,
-                        "unit": db_unit,
+                        "unit": db_unit.short,
                     }
                 db_prices[research_level] = db_discounts
             db_data[research_name] = {
@@ -293,7 +354,6 @@ class Research:
                 and level >= self.db_elem.last_level
             ):
                 break
-
 
             (
                 cost,
@@ -442,15 +502,29 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
 
 
 class QueryPriceForm(npyscreen.ActionPopup):
+    CANCEL_BUTTON_TEXT = "Cancel"
+    CANCEL_BUTTON_BR_OFFSET = (2, 6)
+    OK_BUTTON_BR_OFFSET = (
+        2,
+        CANCEL_BUTTON_BR_OFFSET[1] + 4 + len(CANCEL_BUTTON_TEXT),
+    )
+
+    COMPLETION_BUTTON_TEXT = "Reseach is completed"
+    COMPLETION_BUTTON_BR_OFFSET = (
+        2,
+        OK_BUTTON_BR_OFFSET[1] + 4 + len(COMPLETION_BUTTON_TEXT),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        completion_text = "Reseach is completed"
         self._add_button(
             "completion_button",
             npyscreen.MiniButtonPress,
-            completion_text,
-            -2,
-            -22 - len(completion_text),
+            self.__class__.COMPLETION_BUTTON_TEXT,
+            0 - self.__class__.COMPLETION_BUTTON_BR_OFFSET[0],
+            0
+            - self.__class__.COMPLETION_BUTTON_BR_OFFSET[1]
+            - len(self.__class__.COMPLETION_BUTTON_TEXT),
             self._mark_research_completed,
         )
 
@@ -458,7 +532,7 @@ class QueryPriceForm(npyscreen.ActionPopup):
         self._discount_level = None
         self._research = None
         self._estimated_cost = None
-        self._estimated_unit = None
+        self._estimated_unit_short = None
         self._mode = None
 
         self.add(npyscreen.FixedText, value="Add reserch cost to database")
@@ -470,7 +544,9 @@ class QueryPriceForm(npyscreen.ActionPopup):
         )
         self.nextrely += 1
         self._cost_field = self.add(npyscreen.TitleText, name="Cost:", value="")
-        self._unit_field = self.add(npyscreen.TitleText, name="Unit:", value="")
+        self._unit_short_field = self.add(
+            npyscreen.TitleText, name="Unit:", value=""
+        )
 
     def set_values(
         self, discount_level, research, estimated_cost, estimated_unit, mode,
@@ -478,7 +554,9 @@ class QueryPriceForm(npyscreen.ActionPopup):
         self._discount_level = discount_level
         self._research = research
         self._estimated_cost = estimated_cost
-        self._estimated_unit = estimated_unit
+        self._estimated_unit_short = None
+        if estimated_unit is not None:
+            self._estimated_unit_short = estimated_unit.short
         self._mode = mode
 
     def beforeEditing(self):
@@ -487,14 +565,17 @@ class QueryPriceForm(npyscreen.ActionPopup):
         self._cost_field.value = ""
         if self._estimated_cost is not None:
             self._cost_field.value = str(self._estimated_cost)
-        self._unit_field.value = ""
-        if self._estimated_unit is not None:
-            self._unit_field.value = self._estimated_unit
+        self._unit_short_field.value = ""
+        if self._estimated_unit_short is not None:
+            self._unit_short_field.value = self._estimated_unit_short
         if self._mode == "discount":
             self._added_buttons["completion_button"].hidden = True
             self._initial_widget = self._added_buttons["ok_button"]
         else:
-            self._added_buttons["completion_button"].hidden = False
+            if self._mode == "level":
+                self._added_buttons["completion_button"].hidden = False
+            elif self._mode == "level_last_known":
+                self._added_buttons["completion_button"].hidden = True
             self._initial_widget = self._cost_field
 
     def pre_edit_loop(self):
@@ -513,15 +594,13 @@ class QueryPriceForm(npyscreen.ActionPopup):
             npyscreen.notify_confirm("Invalid cost", title="popup")
             return True
 
-        try:
-            unit = self._unit_field.value
-            UNITS[unit]
-        except KeyError:
+        unit_short = self._unit_short_field.value
+        if not UNITS.is_valid_unit_short(unit_short):
             npyscreen.notify_confirm("Invalid unit", title="popup")
             return True
 
         self._research.db_elem.add_cost(
-            self._research.level, self._discount_level, price, unit
+            self._research.level, self._discount_level, price, unit_short
         )
         self.parentApp.database.save()
         return False
@@ -595,12 +674,15 @@ class IdleAirport(npyscreen.NPSAppManaged):
             estimated_unit = None
         else:
             estimated_cost, estimated_unit = factor_price(estimated_price)
+        mode = update_type
+        if mode == "level" and research.db_elem.last_level is not None:
+            mode = "level_last_known"
         self.getForm("ASK_PRICE").set_values(
             self.state.discount_level,
             research,
             estimated_cost,
             estimated_unit,
-            update_type,
+            mode,
         )
         self.getForm("ASK_PRICE").resize()
         return True
