@@ -69,9 +69,12 @@ UNITS = UnitStorage()
 def factor_price(price):
     x = D(price)
     exp_adjusted = x.adjusted()
-    if exp_adjusted <= 7:
+    if exp_adjusted <= 1:
         exp = 0
-        q = D("1.")
+        q = D("1.00")
+    elif exp_adjusted <= 7:
+        exp = 0
+        q = D("1")
     else:
         exp = exp_adjusted - exp_adjusted % 3
         q = D(".001")
