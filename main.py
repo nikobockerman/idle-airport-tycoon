@@ -282,7 +282,7 @@ class Database:
         self.data = {}
         for research_name, value in data.items():
             prices = {}
-            for research_level, level_data in value["prices"].items():
+            for research_level, level_data in value.get("prices", {}).items():
                 discounts = {}
                 for discount_level, discount_data in level_data.items():
                     discounts[int(discount_level)] = Database.Price(
@@ -305,9 +305,9 @@ class Database:
 
         for research_name, elem in self.data.items():
             db_prices = {}
-            for research_level, discounts in elem.prices.items():
+            for research_level, discounts in sorted(elem.prices.items()):
                 db_discounts = {}
-                for discount_level, price in discounts.items():
+                for discount_level, price in sorted(discounts.items()):
                     db_price, db_unit = factor_price(price.get_price())
                     db_discounts[str(discount_level)] = {
                         "price": db_price,
@@ -375,8 +375,11 @@ class Research:
 class State:
     def __init__(self, path, database):
         self._path = path
-        with open(self._path) as f:
-            data = json.load(f)
+        try:
+            with open(self._path) as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            data = {"discount_level": 0, "researches": {}}
 
         self.discount_level = data["discount_level"]
         self.researches = []
