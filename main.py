@@ -9,9 +9,12 @@ import simplejson
 
 log_file = open("log.log", "a")
 log_file.write("\n\nStarting\n\n")
+
+
 def log(msg):
     print(msg, file=log_file)
     log_file.flush()
+
 
 class Unit:
     def __init__(self, short_name, long_name, exponent):
@@ -84,10 +87,7 @@ def factor_price(price):
     else:
         exp = exp_adjusted - exp_adjusted % 3
         q = D(".001")
-    return (
-        (x.scaleb(-exp).quantize(q)),
-        UNITS.get_unit_for_exponent(exp),
-    )
+    return ((x.scaleb(-exp).quantize(q)), UNITS.get_unit_for_exponent(exp))
 
 
 def print_price(price):
@@ -106,10 +106,7 @@ class Database:
 
         def get_price(self, at_discount_level=None):
             price = self.price * self.unit.multiplier
-            if (
-                at_discount_level is None
-                or at_discount_level == self.discount_level
-            ):
+            if at_discount_level is None or at_discount_level == self.discount_level:
                 return price
 
             base_price = price / (1 - self.discount_level / 100)
@@ -143,10 +140,7 @@ class Database:
                 estimated_price = zero_discount_price.get_price(discount_level)
             else:
                 estimated_price = statistics.mean(
-                    (
-                        price.get_price(discount_level)
-                        for price in discounts.values()
-                    )
+                    (price.get_price(discount_level) for price in discounts.values())
                 )
 
             return estimated_price, True
@@ -156,9 +150,7 @@ class Database:
             return price, is_estimate
 
         def get_price_info_with_payback(self, level, discount_level):
-            price, is_estimate = self.get_price_information(
-                level, discount_level
-            )
+            price, is_estimate = self.get_price_information(level, discount_level)
 
             if price is None:
                 price = self.get_new_price_estimate(level, discount_level)
@@ -247,9 +239,7 @@ class Database:
                     price = discounts.get(discount_level)
                     if price is None:
                         for price in discounts.values():
-                            yield price.get_price(
-                                discount_level
-                            ) * level_multiplier
+                            yield price.get_price(discount_level) * level_multiplier
                     else:
                         yield price.get_price(discount_level) * level_multiplier
 
@@ -272,10 +262,7 @@ class Database:
             assert discount_level not in discounts
 
             discounts[discount_level] = Database.Price(
-                level,
-                price,
-                UNITS.get_unit_for_short(unit_short),
-                discount_level,
+                level, price, UNITS.get_unit_for_short(unit_short), discount_level
             )
 
         def mark_completed(self, last_level):
@@ -359,10 +346,7 @@ class Research:
         if level is None:
             level = self.level
         while True:
-            if (
-                self.db_elem.last_level is not None
-                and level >= self.db_elem.last_level
-            ):
+            if self.db_elem.last_level is not None and level >= self.db_elem.last_level:
                 break
 
             (
@@ -391,7 +375,7 @@ class State:
         self.discount_level = data["discount_level"]
         self.researches = []
         for key, value in data["researches"].items():
-            self.researches.append(Research(key, value, database.data[key],))
+            self.researches.append(Research(key, value, database.data[key]))
 
         for key, elem in database.data.items():
             if next((True for r in self.researches if r.name == key), False):
@@ -422,15 +406,14 @@ def get_next_payback_values(researches, discount_level):
 
     def sort(l):
         return sorted(
-            l,
-            key=lambda x: x.payback_value if x.payback_value is not None else 0,
+            l, key=lambda x: x.payback_value if x.payback_value is not None else 0
         )
 
     values = sort(values)
     while values:
         v = values.pop(0)
         next_value = next(
-            v.research.get_payback_values(discount_level, v.level + 1), None,
+            v.research.get_payback_values(discount_level, v.level + 1), None
         )
         yield v
         if next_value is not None:
@@ -455,9 +438,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         )
 
         self._mark_done_button = self.add(
-            npyscreen.ButtonPress,
-            name="MarkDone",
-            when_pressed_function=self.mark_done,
+            npyscreen.ButtonPress, name="MarkDone", when_pressed_function=self.mark_done
         )
 
         self._exit_button = self.add(
@@ -470,9 +451,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         )
         self._grid.values = []
         for _ in range(10):
-            self._grid.values.append(
-                self._get_row_data(next(self._value_generator))
-            )
+            self._grid.values.append(self._get_row_data(next(self._value_generator)))
 
     def pre_edit_loop(self):
         super().pre_edit_loop()
@@ -483,9 +462,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         research.increase_level()
         self._state.save()
         del self._grid.values[0]
-        self._grid.values.append(
-            self._get_row_data(next(self._value_generator))
-        )
+        self._grid.values.append(self._get_row_data(next(self._value_generator)))
         self._grid.update()
         if self.parentApp.ask_for_database_updates():
             self.parentApp.switchForm("ASK_PRICE")
@@ -517,10 +494,7 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
 class QueryPriceForm(npyscreen.ActionPopup):
     CANCEL_BUTTON_TEXT = "Cancel"
     CANCEL_BUTTON_BR_OFFSET = (2, 6)
-    OK_BUTTON_BR_OFFSET = (
-        2,
-        CANCEL_BUTTON_BR_OFFSET[1] + 4 + len(CANCEL_BUTTON_TEXT),
-    )
+    OK_BUTTON_BR_OFFSET = (2, CANCEL_BUTTON_BR_OFFSET[1] + 4 + len(CANCEL_BUTTON_TEXT))
 
     COMPLETION_BUTTON_TEXT = "Reseach is completed"
     COMPLETION_BUTTON_BR_OFFSET = (
@@ -557,12 +531,10 @@ class QueryPriceForm(npyscreen.ActionPopup):
         )
         self.nextrely += 1
         self._cost_field = self.add(npyscreen.TitleText, name="Cost:", value="")
-        self._unit_short_field = self.add(
-            npyscreen.TitleText, name="Unit:", value=""
-        )
+        self._unit_short_field = self.add(npyscreen.TitleText, name="Unit:", value="")
 
     def set_values(
-        self, discount_level, research, estimated_cost, estimated_unit, mode,
+        self, discount_level, research, estimated_cost, estimated_unit, mode
     ):
         self._discount_level = discount_level
         self._research = research
@@ -642,11 +614,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
         def get_researches_needing_update():
             for research_name in self.database.data:
                 research = next(
-                    (
-                        r
-                        for r in self.state.researches
-                        if r.name == research_name
-                    )
+                    (r for r in self.state.researches if r.name == research_name)
                 )
                 price, is_estimate = research.db_elem.get_price_information(
                     research.level, self.state.discount_level
@@ -666,9 +634,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
                     )
                     yield "level", research, estimated_price
 
-        self.get_next_database_update_query_data = (
-            get_researches_needing_update()
-        )
+        self.get_next_database_update_query_data = get_researches_needing_update()
         return self.set_next_database_update_form()
 
     def set_next_database_update_form(self):
@@ -691,11 +657,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
         if mode == "level" and research.db_elem.last_level is not None:
             mode = "level_last_known"
         self.getForm("ASK_PRICE").set_values(
-            self.state.discount_level,
-            research,
-            estimated_cost,
-            estimated_unit,
-            mode,
+            self.state.discount_level, research, estimated_cost, estimated_unit, mode
         )
         self.getForm("ASK_PRICE").resize()
         return True
