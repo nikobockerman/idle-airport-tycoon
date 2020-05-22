@@ -7,6 +7,11 @@ from decimal import Decimal as D
 import npyscreen
 import simplejson
 
+log_file = open("log.log", "a")
+log_file.write("\n\nStarting\n\n")
+def log(msg):
+    print(msg, file=log_file)
+    log_file.flush()
 
 class Unit:
     def __init__(self, short_name, long_name, exponent):
@@ -69,6 +74,7 @@ UNITS = UnitStorage()
 def factor_price(price):
     x = D(price)
     exp_adjusted = x.adjusted()
+    log("factor_price: {} -> {} {}".format(price, x, exp_adjusted))
     if exp_adjusted <= 1:
         exp = 0
         q = D("1.00")
@@ -86,6 +92,7 @@ def factor_price(price):
 
 def print_price(price):
     cost, unit = factor_price(price)
+    log("print_price: {} -> {} {}".format(price, cost, unit.short))
     return "{} {}".format(cost, unit.short)
 
 
@@ -702,3 +709,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    log_file.close()
