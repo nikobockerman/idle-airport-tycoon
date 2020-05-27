@@ -22,7 +22,7 @@ class Unit:
         self._long_name = long_name
         self._exponent = exponent
         self._multiplier = 10 ** self._exponent
-        # self._divider =
+
 
     @property
     def short(self):
