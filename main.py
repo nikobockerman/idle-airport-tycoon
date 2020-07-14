@@ -682,9 +682,6 @@ class EditStateForm(npyscreen.ActionFormMinimal):
         self._state.save()
         return False
 
-    def on_cancel(self):
-        return False
-
     def afterEditing(self):
         if self.parentApp.ask_for_database_updates():
             self.parentApp.switchForm("ASK_PRICE")
