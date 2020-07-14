@@ -28,6 +28,10 @@ class Unit:
         return self._short_name
 
     @property
+    def long_name(self):
+        return self._long_name
+
+    @property
     def exp(self):
         return self._exponent
 
@@ -68,6 +72,9 @@ class UnitStorage:
 
     def get_unit_for_short(self, unit_short):
         return self._unit_short_map[unit_short]
+
+    def __iter__(self):
+        return self._db.__iter__()
 
 
 UNITS = UnitStorage()
@@ -449,6 +456,12 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
             when_pressed_function=self.edit_state,
         )
 
+        self._show_units_button = self.add(
+            npyscreen.ButtonPress,
+            name="Show units",
+            when_pressed_function=self.show_units,
+        )
+
         self._exit_button = self.add(
             npyscreen.ButtonPress, name="Exit", when_pressed_function=self.exit
         )
@@ -477,6 +490,9 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
 
     def edit_state(self):
         self.parentApp.switchForm("EDIT_STATE")
+
+    def show_units(self):
+        self.parentApp.switchForm("SHOW_UNITS")
 
     def exit(self):
         self.editing = False
@@ -689,6 +705,38 @@ class EditStateForm(npyscreen.ActionFormMinimal):
             self.parentApp.setNextFormPrevious()
 
 
+class ShowUnitsForm(npyscreen.ActionFormMinimal):
+    def __init__(self, *args, **kwargs):
+        self._max_length = 0
+        for unit in UNITS:
+            self._max_length = max(self._max_length, len(unit.long_name))
+        super().__init__(args, kwargs)
+
+    def create(self):
+        values = []
+        for unit in UNITS:
+            values.append(self._get_row_data(unit))
+        self.add(
+            npyscreen.SimpleGrid,
+            name="Grid",
+            columns=2,
+            column_width=self._max_length,
+            select_whole_line=True,
+            values=values,
+        )
+
+    def pre_edit_loop(self):
+        super().pre_edit_loop()
+        self.set_editing(self._added_buttons["ok_button"])
+
+    def afterEditing(self):
+        self.parentApp.setNextFormPrevious()
+
+    @staticmethod
+    def _get_row_data(unit):
+        return [unit.short, unit.long_name]
+
+
 class IdleAirport(npyscreen.NPSAppManaged):
     def onStart(self):
         self.database = Database("database.json")
@@ -696,6 +744,7 @@ class IdleAirport(npyscreen.NPSAppManaged):
         self.addForm("MAIN", NextResearches, self.state)
         self.addForm("ASK_PRICE", QueryPriceForm)
         self.addForm("EDIT_STATE", EditStateForm, self.state)
+        self.addForm("SHOW_UNITS", ShowUnitsForm)
         self.get_next_database_update_query_data = None
         if self.ask_for_database_updates():
             self.setNextForm("ASK_PRICE")
