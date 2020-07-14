@@ -23,7 +23,6 @@ class Unit:
         self._exponent = exponent
         self._multiplier = 10 ** self._exponent
 
-
     @property
     def short(self):
         return self._short_name
@@ -383,6 +382,9 @@ class State:
 
             self.researches.append(Research(key, None, elem))
 
+    def get_research(self, research_name):
+        return next((r for r in self.researches if r.name == research_name), None)
+
     def save(self):
         new_data = {
             "discount_level": self.discount_level,
@@ -441,6 +443,12 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
             npyscreen.ButtonPress, name="MarkDone", when_pressed_function=self.mark_done
         )
 
+        self._edit_state_button = self.add(
+            npyscreen.ButtonPress,
+            name="Edit state",
+            when_pressed_function=self.edit_state,
+        )
+
         self._exit_button = self.add(
             npyscreen.ButtonPress, name="Exit", when_pressed_function=self.exit
         )
@@ -466,6 +474,9 @@ class NextResearches(npyscreen.FormBaseNewExpanded):
         self._grid.update()
         if self.parentApp.ask_for_database_updates():
             self.parentApp.switchForm("ASK_PRICE")
+
+    def edit_state(self):
+        self.parentApp.switchForm("EDIT_STATE")
 
     def exit(self):
         self.editing = False
@@ -598,19 +609,101 @@ class QueryPriceForm(npyscreen.ActionPopup):
             self.parentApp.setNextFormPrevious()
 
 
+class EditStateForm(npyscreen.ActionFormMinimal):
+    RESET_BUTTON_TEXT = "Reset state"
+    RESET_BUTTON_BR_OFFSET = (2, 21)
+
+    def __init__(self, state, *args, **kwargs):
+        self._state = state
+        self._label_length = 0
+        self._research_names = []
+        for research in self._state.researches:
+            self._label_length = max(self._label_length, len(research.name))
+            self._research_names.append(research.name)
+        super().__init__(args, kwargs)
+        self._add_button(
+            "reset_button",
+            npyscreen.MiniButtonPress,
+            self.__class__.RESET_BUTTON_TEXT,
+            0 - self.__class__.RESET_BUTTON_BR_OFFSET[0],
+            0
+            - self.__class__.RESET_BUTTON_BR_OFFSET[1]
+            - len(self.__class__.RESET_BUTTON_TEXT),
+            self._reset_state,
+        )
+
+    def create(self):
+        self._research_fields = {}
+        for research_name in self._research_names:
+            self._research_fields[research_name] = self.add(
+                npyscreen.TitleText,
+                name=research_name,
+                use_two_lines=False,
+                begin_entry_at=self._label_length + 2,
+            )
+
+    def beforeEditing(self):
+        for name, research_field in self._research_fields.items():
+            research_field.value = str(self._state.get_research(name).level)
+
+    def _reset_state(self):
+        for research_field in self._research_fields.values():
+            research_field.value = str(0)
+            research_field.update()
+
+    def on_ok(self):
+        new_levels = {}
+        for name, research_field in self._research_fields.items():
+            try:
+                new_level = int(research_field.value)
+            except ValueError:
+                npyscreen.notify_confirm(
+                    "Numeric level needed for {}".format(name), title="popup"
+                )
+                return True
+            if new_level < 0:
+                npyscreen.notify_confirm(
+                    "Positive level needed for {}".format(name), title="popup"
+                )
+                return True
+            last_level = self._state.get_research(name).db_elem.last_level
+            if last_level is not None and new_level > last_level:
+                npyscreen.notify_confirm(
+                    "Max level ({}) exceeded for {}".format(last_level, name),
+                    title="popup",
+                )
+                return True
+
+            new_levels[name] = new_level
+
+        for research in self._state.researches:
+            research.level = new_levels[research.name]
+
+        self._state.save()
+        return False
+
+    def on_cancel(self):
+        return False
+
+    def afterEditing(self):
+        if self.parentApp.ask_for_database_updates():
+            self.parentApp.switchForm("ASK_PRICE")
+        else:
+            self.parentApp.setNextFormPrevious()
+
+
 class IdleAirport(npyscreen.NPSAppManaged):
     def onStart(self):
         self.database = Database("database.json")
         self.state = State("state.json", self.database)
         self.addForm("MAIN", NextResearches, self.state)
         self.addForm("ASK_PRICE", QueryPriceForm)
+        self.addForm("EDIT_STATE", EditStateForm, self.state)
         self.get_next_database_update_query_data = None
         if self.ask_for_database_updates():
             self.setNextForm("ASK_PRICE")
 
     def ask_for_database_updates(self):
-        assert self.get_next_database_update_query_data is None
-
         def get_researches_needing_update():
             for research_name in self.database.data:
                 research = next(
